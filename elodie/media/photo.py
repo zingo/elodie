@@ -72,14 +72,14 @@ class Photo(Media):
         try:
             # this is a hack to get the proper direction by negating the values for S and W
             latdir = 1
-            if(key == self.exif_map['latitude'] and str(exif[self.exif_map['latitude_ref']].value) == 'S'):
+            if(type == 'latitude' and str(exif[self.exif_map['latitude_ref']].value) == 'S'):
                 latdir = -1
             londir = 1
-            if(key == self.exif_map['longitude'] and str(exif[self.exif_map['longitude_ref']].value) == 'W'):
+            if(type =='longitude' and str(exif[self.exif_map['longitude_ref']].value) == 'W'):
                 londir = -1
 
             coords = exif[key].value
-            if(key == 'latitude'):
+            if(type == 'latitude'):
                 return float(str(LatLon.Latitude(degree=coords[0], minute=coords[1], second=coords[2]))) * latdir
             else:
                 return float(str(LatLon.Longitude(degree=coords[0], minute=coords[1], second=coords[2]))) * londir
@@ -172,9 +172,9 @@ class Photo(Media):
         exif_metadata = pyexiv2.ImageMetadata(source)
         exif_metadata.read()
 
-        exif_metadata['Exif.GPSInfo.GPSLatitude'] = geolocation.decimal_to_dms(latitude)
+        exif_metadata['Exif.GPSInfo.GPSLatitude'] = geolocation.decimal_to_dms(latitude, False)
         exif_metadata['Exif.GPSInfo.GPSLatitudeRef'] = pyexiv2.ExifTag('Exif.GPSInfo.GPSLatitudeRef', 'N' if latitude >= 0 else 'S')
-        exif_metadata['Exif.GPSInfo.GPSLongitude'] = geolocation.decimal_to_dms(longitude)
+        exif_metadata['Exif.GPSInfo.GPSLongitude'] = geolocation.decimal_to_dms(longitude, False)
         exif_metadata['Exif.GPSInfo.GPSLongitudeRef'] = pyexiv2.ExifTag('Exif.GPSInfo.GPSLongitudeRef', 'E' if longitude >= 0 else 'W')
 
         exif_metadata.write()
